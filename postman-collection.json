@@ -1,0 +1,349 @@
+{
+  "info": {
+    "name": "Tournament Management System API",
+    "description": "Complete API collection for Tournament Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Test User\",\"email\":\"test@example.com\",\"password\":\"Test@12345\",\"role\":\"user\"}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": ["const res = pm.response.json();","if(res.success){pm.collectionVariables.set('accessToken',res.data.accessToken);pm.collectionVariables.set('refreshToken',res.data.refreshToken);}"]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"admin@tournamentsystem.com\",\"password\":\"Admin@123456\"}"
+            }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/auth/me"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/refresh-token",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"refreshToken\":\"{{refreshToken}}\"}"
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" },{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/logout",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"refreshToken\":\"{{refreshToken}}\"}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tournaments",
+      "item": [
+        {
+          "name": "Get All Tournaments",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/tournaments?page=1&limit=10",
+              "query": [{ "key": "page", "value": "1" },{ "key": "limit", "value": "10" },{ "key": "sport", "value": "", "disabled": true },{ "key": "status", "value": "", "disabled": true },{ "key": "featured", "value": "true", "disabled": true }]
+            }
+          }
+        },
+        {
+          "name": "Get Tournament",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/tournaments/TOURNAMENT_ID"
+          }
+        },
+        {
+          "name": "Create Tournament (Organizer)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" },{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/tournaments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"title\":\"Test Tournament\",\"description\":\"A test tournament\",\"sport\":\"cricket\",\"format\":\"single_elimination\",\"maxTeams\":8,\"entryFee\":1000,\"registrationDeadline\":\"2025-12-01T00:00:00Z\",\"startDate\":\"2025-12-15T00:00:00Z\",\"endDate\":\"2025-12-31T00:00:00Z\"}"
+            }
+          }
+        },
+        {
+          "name": "Approve Tournament (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" },{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/tournaments/TOURNAMENT_ID/approve",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"notes\":\"Approved - meets all guidelines\"}"
+            }
+          }
+        },
+        {
+          "name": "Generate Bracket (Organizer)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/tournaments/TOURNAMENT_ID/generate-bracket"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Teams",
+      "item": [
+        {
+          "name": "Get All Teams",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/teams"
+          }
+        },
+        {
+          "name": "Create Team",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" },{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/teams",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"My Team\",\"sport\":\"cricket\",\"description\":\"A great team\"}"
+            }
+          }
+        },
+        {
+          "name": "Add Member",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" },{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/teams/TEAM_ID/members",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"userId\":\"USER_ID\",\"role\":\"player\"}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Registrations",
+      "item": [
+        {
+          "name": "Register Team",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" },{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/registrations",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"tournamentId\":\"TOURNAMENT_ID\",\"teamId\":\"TEAM_ID\"}"
+            }
+          }
+        },
+        {
+          "name": "Get My Registrations",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/registrations/my"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/admin/stats"
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users?page=1&limit=10",
+              "query": [{ "key": "page", "value": "1" },{ "key": "limit", "value": "10" },{ "key": "role", "value": "", "disabled": true },{ "key": "status", "value": "", "disabled": true }]
+            }
+          }
+        },
+        {
+          "name": "Update User Status",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" },{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/admin/users/USER_ID/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"status\":\"active\"}"
+            }
+          }
+        },
+        {
+          "name": "Get Audit Logs",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/admin/audit-logs"
+          }
+        },
+        {
+          "name": "Send Announcement",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" },{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/admin/announcements",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"title\":\"System Maintenance\",\"message\":\"The system will be down for maintenance on Sunday 2-4 AM.\",\"roles\":[\"user\",\"organizer\"]}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Get Notifications",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/notifications"
+          }
+        },
+        {
+          "name": "Get Unread Count",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/notifications/unread-count"
+          }
+        },
+        {
+          "name": "Mark All Read",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/notifications/mark-all-read"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Platform Analytics (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/analytics/platform?period=30",
+              "query": [{ "key": "period", "value": "30" }]
+            }
+          }
+        },
+        {
+          "name": "Organizer Analytics",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/analytics/organizer"
+          }
+        },
+        {
+          "name": "User Analytics",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/analytics/user"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Grounds",
+      "item": [
+        {
+          "name": "Get All Grounds",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/grounds"
+          }
+        },
+        {
+          "name": "Create Ground (Organizer)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" },{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/grounds",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"My Ground\",\"sport\":\"cricket\",\"capacity\":5000,\"address\":{\"city\":\"Mumbai\",\"state\":\"Maharashtra\",\"country\":\"India\"},\"facilities\":[\"Floodlights\",\"Parking\"]}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health"
+          }
+        }
+      ]
+    }
+  ]
+}
