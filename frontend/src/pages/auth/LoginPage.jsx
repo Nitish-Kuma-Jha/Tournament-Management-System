@@ -59,16 +59,6 @@ export default function LoginPage() {
             <p className="text-dark-500 text-sm">Sign in to your Tournament account</p>
           </div>
 
-          /* {/* Demo credentials */}
-          <div className="bg-dark-800/60 border border-dark-600/50 rounded-lg p-3 mb-6 text-xs">
-            <p className="text-dark-400 font-medium mb-1.5">Demo Credentials:</p>
-            <div className="space-y-0.5 text-dark-500">
-              <p>Admin: admin@tournamentsystem.com / Admin@123456</p>
-              <p>Organizer: cricket@organizer.com / Organizer@123</p>
-              <p>User: rahul@user.com / User@12345</p>
-            </div>
-          </div> */
-
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="input-label">Email address</label>
